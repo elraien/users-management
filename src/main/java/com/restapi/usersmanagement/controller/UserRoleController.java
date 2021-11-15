@@ -38,19 +38,7 @@ public class UserRoleController {
     @DeleteMapping(value = "/userroles/{id}")
     ResponseEntity<?> deleteUserRole(@PathVariable(value = "id") @Min(1) int id,
                                      @RequestParam int version) {
-        UserRole userRole = userRoleService.getUserRoleById(id);
-        if (userRole == null) {
-            logger.info(String.format("UserRole with id: %s does not exist.", id));
-            return ResponseEntity.noContent().build();
-        }
-
-        if (userRole.getVersion() == version) {
-            userRoleService.deleteUserRole(id);
-            logger.info(String.format("UserRole with id: %s was successfully deleted.", id));
-            return ResponseEntity.noContent().build();
-        } else {
-            logger.info(String.format("UserRole with id: %s can not be deleted because of version mismatch.", id));
-            return ResponseEntity.badRequest().build();
-        }
+        userRoleService.deleteUserRole(id, version);
+        return ResponseEntity.noContent().build();
     }
 }

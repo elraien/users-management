@@ -1,7 +1,6 @@
 package com.restapi.usersmanagement.controller;
 
 import com.restapi.usersmanagement.dto.UserDTO;
-import com.restapi.usersmanagement.exception.EntityNotFoundException;
 import com.restapi.usersmanagement.mapper.UserMapper;
 import com.restapi.usersmanagement.model.User;
 import com.restapi.usersmanagement.service.UserService;
@@ -48,40 +47,20 @@ public class UserController {
     @DeleteMapping(value = "/users/{id}")
     ResponseEntity deleteUser(@PathVariable("id") @Min(1) int id,
                               @RequestParam int version) {
-        User user = userService.findUserById(id);
-        if (user == null) {
-            logger.info(String.format("User with id: %s does not exist.", id));
+        userService.deleteUser(id, version);
+        User deleterUser = userService.findUserById(id);
+        if (deleterUser == null) {
             return ResponseEntity.noContent().build();
-        }
-
-        if (user.getVersion() == version) {
-            userService.deleteUser(user.getId());
-            User deletedUser = userService.findUserById(id);
-            if (deletedUser == null) {
-                logger.info(String.format("User with id: %s was successfully deleted.", id));
-                return ResponseEntity.noContent().build();
-            }
         } else {
-            logger.info(String.format("User with id: %s can not be deleted because of version mismatch.", id));
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.badRequest().build();
     }
 
     @PatchMapping(path = "/users/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateUser(@PathVariable int id,
                                         @RequestBody User patchUser) {
-        User user = userService.findUserById(id);
-        if (user == null) {
-            throw new EntityNotFoundException("User can not be updated because it does not exist.");
-        }
-        if (user.getVersion() == patchUser.getVersion()) {
-            userService.save(patchUser);
-            return ResponseEntity.ok("resource userName updated");
-        } else {
-            logger.info(String.format("User with id: %s can not be updated because of version mismatch.", id));
-            return ResponseEntity.badRequest().build();
-        }
+        userService.updateUser(id, patchUser);
+        return ResponseEntity.ok("resource userName updated");
     }
 
     @GetMapping(value = "/validusers")
