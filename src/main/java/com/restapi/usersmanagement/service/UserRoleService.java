@@ -16,10 +16,6 @@ public class UserRoleService {
     @Autowired
     private UserRoleRepository userRoleRepository;
 
-    public List<UserRole> getAllUserRoles() {
-        return userRoleRepository.findAll();
-    }
-
     public List<UserRole> getUserRolesByUserIdAndUnitId(int userId, int unitId) {
         return userRoleRepository.findAllByUserIdAndUnitId(userId, unitId);
     }
